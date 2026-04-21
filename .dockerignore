@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environment — dependencies are installed inside the image by uv
+.venv/
+
+# Git
+.git/
+.gitignore
+
+# Environment & secrets — never bake into the image
+.env
+*.json
+
+# IDE
+.idea/
+.vscode/
+
+# Docker files themselves
+Dockerfile
+compose.yaml
+.dockerignore
+
+# Misc
+*.md
+.DS_Store

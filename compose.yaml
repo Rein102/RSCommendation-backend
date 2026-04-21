@@ -1,0 +1,26 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      # Hot-reload: mount the source so code changes are picked up without rebuild
+      - .:/app
+      # Named volume shields the container's .venv from being overwritten by the host mount
+      - venv:/app/.venv
+      # Mount ADC credentials read-only — never baked into the image
+      - ~/.config/gcloud/application_default_credentials.json:/root/.config/gcloud/application_default_credentials.json:ro
+    environment:
+      # Points the Firebase Admin SDK to the ADC credentials file inside the container
+      GOOGLE_APPLICATION_CREDENTIALS: /root/.config/gcloud/application_default_credentials.json
+      # Required by firebase-admin so it knows which Firebase project to target
+      GOOGLE_CLOUD_PROJECT: rscommendation-493408
+    env_file:
+      - .env
+    # Override the production CMD with --reload for development
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  venv:
