@@ -1,66 +1,38 @@
 """
 Recommendations router.
 
-POST /recommendations
+GET /recommendations
     - Requires a valid Firebase ID token (Authorization: Bearer <token>)
-    - Accepts a query vector from the Flutter client
-    - Returns the k nearest item IDs from the in-memory index
+    - Reads the authenticated user's preferences from Firestore
+    - Returns the k nearest activity IDs, re-ranked by category preference
 """
 
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
 from src.dependencies import get_current_user
 from src.ml.nearest_neighbor import NearestNeighborIndex
+from src.models.recommendations import RecommendationResponse
+from src.services.recommendations import get_recommendations
 
 router = APIRouter(prefix="/recommendations", tags=["recommendations"])
 
 
-# ---------------------------------------------------------------------------
-# Request / response schemas
-# ---------------------------------------------------------------------------
-
-class RecommendationRequest(BaseModel):
-    """Query vector sent by the Flutter client."""
-
-    vector: list[float] = Field(
-        ...,
-        description="The query vector. Must match the dimensionality of the index.",
-        examples=[[0.1, 0.4, 0.9, 0.2]],
-    )
-    k: int = Field(
-        default=5,
-        ge=1,
-        le=50,
-        description="Number of recommendations to return.",
-    )
-
-
-class RecommendationResponse(BaseModel):
-    """Ordered list of recommended item IDs."""
-
-    item_ids: list[str]
-    user_uid: str
-
-
-# ---------------------------------------------------------------------------
-# Route
-# ---------------------------------------------------------------------------
-
-@router.post("", response_model=RecommendationResponse)
-async def get_recommendations(
-    body: RecommendationRequest,
+@router.get("", response_model=RecommendationResponse)
+async def recommendations(
     request: Request,
+    k: int = Query(default=10, ge=1, le=50, description="Number of recommendations to return."),
     current_user: dict[str, Any] = Depends(get_current_user),
 ) -> RecommendationResponse:
     """
-    Return the k nearest items for the provided query vector.
+    Return the k best-matching activities for the authenticated user.
 
-    The ML index is loaded once at startup and stored in `app.state.nn_index`.
-    Replace the placeholder startup data in `main.py` with real vectors loaded
-    from Firestore.
+    Preferences are read from `users/{uid}` in Firestore:
+    - `preferences.features`   — 14-dim feature vector for NN lookup
+    - `preferences.categories` — 10-dim category preference for re-ranking
+
+    The ML index is built once at startup from the `activities` collection.
     """
     index: NearestNeighborIndex | None = getattr(request.app.state, "nn_index", None)
 
@@ -70,7 +42,17 @@ async def get_recommendations(
             detail="Recommendation index is not ready yet.",
         )
 
-    item_ids = index.query(body.vector, k=body.k)
+    activity_categories: dict[str, str] = getattr(
+        request.app.state, "activity_categories", {}
+    )
+
+    item_ids = await get_recommendations(
+        uid=current_user["uid"],
+        k=k,
+        db=request.app.state.db,
+        nn_index=index,
+        activity_categories=activity_categories,
+    )
 
     return RecommendationResponse(
         item_ids=item_ids,
