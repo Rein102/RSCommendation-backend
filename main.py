@@ -35,18 +35,34 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     get_app()
     app.state.db = get_db()
 
-    # 2. Build the nearest-neighbour index.
-    #    TODO: Replace this placeholder with real vectors loaded from Firestore.
-    #    Example pattern:
-    #        docs = app.state.db.collection("items").stream()
-    #        vectors = np.array([doc.to_dict()["vector"] for doc in docs], dtype=np.float32)
-    #        item_ids = [doc.id for doc in docs]
-    placeholder_vectors = np.random.rand(12, 12).astype(np.float32)
-    placeholder_ids = [
-        "football", "tennis", "basketball", "yoga", "swimming", "badminton",
-        "cycling", "volleyball", "fitness_gym", "squash", "running", "martial_arts",
+    # 2. Build the nearest-neighbour index from the Firestore `activities` collection.
+    #    Each document must have a `weights` map with the 14 taxonomy keys in order:
+    #    social, goal, energy_type, variety, intensity, strength, fitness,
+    #    coordination, flexibility, contact, opponent, social_interaction,
+    #    tactical, mental_calm
+    WEIGHT_KEYS = [
+        "social", "goal", "energy_type", "variety",
+        "intensity", "strength", "fitness", "coordination", "flexibility",
+        "contact", "opponent", "social_interaction", "tactical", "mental_calm",
     ]
-    app.state.nn_index = build_index(placeholder_vectors, placeholder_ids)
+
+    docs = list(app.state.db.collection("activities").stream())
+    valid_docs = [d for d in docs if d.to_dict().get("weights")]
+
+    if valid_docs:
+        vectors = np.array(
+            [[d.to_dict()["weights"].get(k, 0.5) for k in WEIGHT_KEYS] for d in valid_docs],
+            dtype=np.float32,
+        )
+        item_ids = [d.id for d in valid_docs]
+        print(f"[startup] Loaded {len(item_ids)} activities from Firestore.")
+    else:
+        # Fallback: empty index (will return 503 on query — better than random data)
+        print("[startup] WARNING: No activities found in Firestore. Index not fitted.")
+        vectors = np.empty((0, len(WEIGHT_KEYS)), dtype=np.float32)
+        item_ids = []
+
+    app.state.nn_index = build_index(vectors, item_ids)
 
     yield
 

@@ -77,7 +77,11 @@ def build_index(vectors: NDArray[np.float32], item_ids: list[str]) -> NearestNei
     Call this inside the FastAPI lifespan startup handler, e.g.:
 
         app.state.nn_index = build_index(vectors, item_ids)
+
+    If `item_ids` is empty the index is returned in an unfitted state;
+    queries against it will raise HTTP 503.
     """
     index = NearestNeighborIndex()
-    index.fit(vectors, item_ids)
+    if item_ids:
+        index.fit(vectors, item_ids)
     return index
