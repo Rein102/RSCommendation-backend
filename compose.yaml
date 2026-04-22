@@ -11,7 +11,8 @@ services:
       # Named volume shields the container's .venv from being overwritten by the host mount
       - venv:/app/.venv
       # Mount ADC credentials read-only — never baked into the image
-      - ~/.config/gcloud/application_default_credentials.json:/root/.config/gcloud/application_default_credentials.json:ro
+      # Path is set in .env and differs per OS (Windows vs macOS/Linux)
+      - ${GOOGLE_APPLICATION_CREDENTIALS}:/root/.config/gcloud/application_default_credentials.json:ro
     environment:
       # Points the Firebase Admin SDK to the ADC credentials file inside the container
       GOOGLE_APPLICATION_CREDENTIALS: /root/.config/gcloud/application_default_credentials.json
