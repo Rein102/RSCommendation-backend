@@ -54,7 +54,4 @@ async def recommendations(
         activity_categories=activity_categories,
     )
 
-    return RecommendationResponse(
-        item_ids=item_ids,
-        user_uid=current_user["uid"],
-    )
+    return RecommendationResponse(item_ids=item_ids)
