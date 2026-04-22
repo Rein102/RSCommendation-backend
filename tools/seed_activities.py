@@ -234,6 +234,41 @@ ACTIVITIES: list[tuple[str, str, str, str | None, CategorySlug, str | None, list
     ("theatre",                  "Theatre",             "Theater",               None,              C.creative_cultural, "theater_comedy", [4,1,2,5,2,1,2,5,3,1,1,5,2,3]),
     ("theatre_improv",           "Theatre Improvisation","Theater Improvisatie",  "Improv Theatre",  C.creative_cultural, "theater_comedy", [5,1,2,5,2,1,2,5,3,1,1,5,3,2]),
     ("vocals",                   "Vocals",              "Zang",                  None,              C.creative_cultural, "music_note",     [2,1,1,4,1,1,1,3,1,1,1,2,1,4]),
+
+    # -------------------------------------------------------------------------
+    # Excluded from NN index — seeded for metadata completeness only.
+    # These doc IDs are listed in EXCLUDED_ACTIVITY_IDS in main.py and are
+    # filtered out at startup before the index is built.
+    # -------------------------------------------------------------------------
+
+    # Meet & Play event formats
+    ("beach_volleyball_meetplay",      "Beach Volleyball",  "Beachvolleybal",   "Meet & Play",           C.team_sports,   "sports_volleyball",  [5,2,4,4,4,4,5,5,3,1,4,5,3,1]),
+    ("volleyball_meetplay",            "Volleyball",        "Volleybal",        "Meet & Play",           C.team_sports,   "sports_volleyball",  [5,2,4,4,4,3,5,4,3,1,5,5,3,1]),
+    ("tennis_meetplay",                "Tennis",            "Tennis",           "Meet & Play",           C.racket_sports, "sports_tennis",      [4,2,4,4,4,3,4,4,3,1,5,4,3,1]),
+    ("meet_and_play_beach_volleyball", "Meet & Play",       "Meet & Play",      "Beach Volleyball",      C.team_sports,   "sports_volleyball",  [5,2,4,4,4,3,5,4,3,1,5,5,3,1]),
+    ("meet_and_play_basketball",       "Meet & Play",       "Meet & Play",      "Basketball",            C.team_sports,   "sports_basketball",  [5,2,4,4,4,3,5,4,3,3,5,5,3,1]),
+    ("meet_and_play_volleyball",       "Meet & Play",       "Meet & Play",      "Volleyball",            C.team_sports,   "sports_volleyball",  [5,2,4,4,4,3,5,4,3,1,5,5,3,1]),
+    ("meet_and_play_tennis",           "Meet & Play",       "Meet & Play",      "Tennis",                C.racket_sports, "sports_tennis",      [4,2,4,4,4,3,4,4,3,1,5,4,3,1]),
+
+    # Internal competition
+    ("internal_comp",    "Internal Competition", "Interne Competitie",    "Customer Participation", C.team_sports,        None,             [4,5,3,4,4,3,4,3,2,1,4,4,4,1]),
+
+    # Assessment & advisory services
+    ("fms_test",                 "FMS Test",        "FMS-test",          None,                    C.fitness_strength,  None,             [1,1,1,2,1,1,1,3,2,1,1,1,1,2]),
+    ("run_analysis",             "Running Analysis", "Hardloopanalyse",  None,                    C.individual_sports, None,             [1,1,1,2,1,1,2,2,1,1,1,1,2,2]),
+    ("nutrition_advice",         "Nutrition Advice", "Voedingsadvies",   "General",               C.creative_cultural, None,             [1,1,1,2,1,1,1,1,1,1,1,1,1,3]),
+    ("nutrition_advice_medical", "Nutrition Advice", "Voedingsadvies",   "Medical/Sport-focused", C.creative_cultural, None,             [1,2,1,2,1,1,1,1,1,1,1,1,2,3]),
+
+    # Generic umbrella entries (not specific activities)
+    ("culture",      "Culture",     "Cultuur",   None, C.creative_cultural, None,             [3,1,1,3,1,1,1,2,2,1,1,3,2,4]),
+    ("mental_sport", "Mental Sports Coaching", "Mentale sportbegeleiding", None, C.mind_body, "self_improvement", [2,1,1,3,1,1,1,1,1,1,1,2,2,5]),
+
+    # One-off events
+    ("lecture",        "Lecture",             "Lezing",           None,         C.creative_cultural, "menu_book",      [2,1,1,2,1,1,1,1,1,1,1,2,2,4]),
+    ("performance",    "Performance / Show",  "Voorstelling",     None,         C.creative_cultural, "theater_comedy", [3,1,1,3,1,1,1,2,2,1,1,3,2,4]),
+    ("workshop",       "Workshop",            "Workshop",         None,         C.creative_cultural, None,             [3,1,1,3,1,1,1,2,2,1,1,3,2,3]),
+    ("spinning_movie", "Spinning Movie Night","Spinning Movie night", "Movie Night", C.group_cardio, "directions_bike",[3,1,2,2,4,2,5,2,1,1,1,3,1,2]),
+    ("spinning_ftp",   "Spinning FTP Test",   "Spinning FTP-test", None,        C.group_cardio,     "directions_bike",[1,4,2,2,5,2,5,2,1,1,1,1,2,1]),
 ]
 
 

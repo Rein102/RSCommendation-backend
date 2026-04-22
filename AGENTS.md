@@ -115,11 +115,16 @@ preferences:
 
 ## Excluded activity IDs
 
-The following activity doc IDs are present in the Firestore `activities` collection
-(seeded for completeness) but are **excluded from the NN index** at startup:
+The following activity doc IDs are seeded into the Firestore `activities` collection
+(so the Flutter app can look up their metadata) but are **excluded from the NN index**
+at startup via `EXCLUDED_ACTIVITY_IDS` in `main.py`. They will never appear in
+recommendation results.
 
 - Meet & Play formats: `meet_and_play_beach_volleyball`, `meet_and_play_basketball`, `meet_and_play_volleyball`, `meet_and_play_tennis`, `beach_volleyball_meetplay`, `volleyball_meetplay`, `tennis_meetplay`
-- Events/services: `internal_comp`, `fms_test`, `run_analysis`, `nutrition_advice`, `nutrition_advice_medical`, `culture`, `mental_sport`, `lecture`, `performance`, `workshop`, `spinning_movie`, `spinning_ftp`
+- Internal competition: `internal_comp`
+- Assessment & advisory services: `fms_test`, `run_analysis`, `nutrition_advice`, `nutrition_advice_medical`
+- Generic umbrella entries: `culture`, `mental_sport`
+- One-off events: `lecture`, `performance`, `workshop`, `spinning_movie`, `spinning_ftp`
 
 ## Development philosophy
 
