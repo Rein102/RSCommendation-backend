@@ -93,3 +93,16 @@ class UserPreferences(BaseModel):
 
     features:   FeaturePreferences   = Field(default_factory=FeaturePreferences)
     categories: CategoryPreferences  = Field(default_factory=CategoryPreferences)
+
+
+class DerivePreferencesResponse(BaseModel):
+    """Derived (and merged) user preferences returned by POST /derive-preferences.
+
+    The shape matches the nested `preferences` map stored on `users/{uid}` in
+    Firestore: `{ "features": {...}, "categories": {...} }`. Values are the
+    result of the rating-weighted derivation, with any keys listed in
+    `users/{uid}.manualOverrides` left untouched at their stored values.
+    """
+
+    features:   FeaturePreferences
+    categories: CategoryPreferences

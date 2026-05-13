@@ -17,7 +17,7 @@ from fastapi import FastAPI
 
 from src.firebase import get_app, get_db
 from src.ml.nearest_neighbor import build_index
-from src.routers import health, recommendations
+from src.routers import derive_preferences, health, recommendations
 
 load_dotenv()
 
@@ -94,7 +94,15 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         if d.to_dict().get("category")
     }
 
-    # 5. Build the nearest-neighbour index from the valid activity vectors.
+    # 5. Build an in-memory activity-weights lookup: doc_id → {feature_key: float}.
+    #    Used by the derive-preferences endpoint to compute the rating-weighted
+    #    feature average without re-fetching the activities collection.
+    app.state.activity_weights: dict[str, dict[str, float]] = {
+        d.id: {k: float(d.to_dict()["weights"].get(k, 0.5)) for k in WEIGHT_KEYS}
+        for d in valid_docs
+    }
+
+    # 6. Build the nearest-neighbour index from the valid activity vectors.
     if valid_docs:
         vectors = np.array(
             [
@@ -132,3 +140,4 @@ app = FastAPI(
 # Routers
 app.include_router(health.router)
 app.include_router(recommendations.router)
+app.include_router(derive_preferences.router)
