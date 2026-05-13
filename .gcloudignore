@@ -1,0 +1,28 @@
+# Ignore rules for `gcloud builds submit` uploads.
+# Syntax mirrors .gitignore.
+
+.git/
+.github/
+
+# Local secrets and environment
+.env
+.env.*
+*.json
+
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Dev-only tooling
+tools/
+compose.yaml
+.dockerignore
+
+# Docs
+AGENTS.md
+README.md
