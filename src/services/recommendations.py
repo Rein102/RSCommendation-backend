@@ -11,9 +11,10 @@ Orchestrates the full recommendation pipeline:
 
 from google.cloud.firestore import Client
 
+from src.config import WEIGHT_KEYS
 from src.ml.nearest_neighbor import NearestNeighborIndex
 from src.models.user import CategoryPreferences, FeaturePreferences
-from src.services.user_vectors import DEFAULT_VALUE, WEIGHT_KEYS, get_user_preferences_raw
+from src.services.user_vectors import DEFAULT_VALUE, get_user_preferences_raw
 
 # How strongly category preference bends the NN ranking.
 # Score = cosine_similarity + ALPHA * (cat_pref - 0.5)
