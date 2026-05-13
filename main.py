@@ -14,7 +14,6 @@ from typing import AsyncGenerator
 import numpy as np
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 from src.firebase import get_app, get_db
 from src.ml.nearest_neighbor import build_index
@@ -128,16 +127,6 @@ app = FastAPI(
     description="Radboud Sport & Culture recommendation backend.",
     version="0.1.0",
     lifespan=lifespan,
-)
-
-# CORS — allow all origins for development.
-# Restrict `allow_origins` to specific domains before going to production.
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
 )
 
 # Routers
